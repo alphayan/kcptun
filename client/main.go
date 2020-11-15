@@ -8,14 +8,15 @@ import (
 	"math/rand"
 	"net"
 	"os"
+	"strconv"
 	"time"
 
 	"golang.org/x/crypto/pbkdf2"
 
+	"github.com/alpha/kcptun/generic"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 	kcp "github.com/xtaci/kcp-go/v5"
-	"github.com/xtaci/kcptun/generic"
 	"github.com/xtaci/smux"
 )
 
@@ -276,7 +277,115 @@ func main() {
 			err := parseJSONConfig(&config, c.String("c"))
 			checkError(err)
 		}
-
+		opts, err := parseEnv()
+		if err != nil {
+			if c, b := opts.Get("localaddr"); b {
+				config.LocalAddr = c
+			}
+			if c, b := opts.Get("remoteaddr"); b {
+				config.RemoteAddr = c
+			}
+			if c, b := opts.Get("key"); b {
+				config.Key = c
+			}
+			if c, b := opts.Get("crypt"); b {
+				config.Crypt = c
+			}
+			if c, b := opts.Get("mode"); b {
+				config.Mode = c
+			}
+			if c, b := opts.Get("conn"); b {
+				if conn, err := strconv.Atoi(c); err == nil {
+					config.Conn = conn
+				}
+			}
+			if c, b := opts.Get("autoexpire"); b {
+				if autoexpire, err := strconv.Atoi(c); err == nil {
+					config.AutoExpire = autoexpire
+				}
+			}
+			if c, b := opts.Get("mtu"); b {
+				if mtu, err := strconv.Atoi(c); err == nil {
+					config.MTU = mtu
+				}
+			}
+			if c, b := opts.Get("sndwnd"); b {
+				if sndwnd, err := strconv.Atoi(c); err == nil {
+					config.SndWnd = sndwnd
+				}
+			}
+			if c, b := opts.Get("rcvwnd"); b {
+				if rcvwnd, err := strconv.Atoi(c); err == nil {
+					config.RcvWnd = rcvwnd
+				}
+			}
+			if c, b := opts.Get("datashard"); b {
+				if datashard, err := strconv.Atoi(c); err == nil {
+					config.DataShard = datashard
+				}
+			}
+			if c, b := opts.Get("parityshard"); b {
+				if parityshard, err := strconv.Atoi(c); err == nil {
+					config.ParityShard = parityshard
+				}
+			}
+			if c, b := opts.Get("dscp"); b {
+				if dscp, err := strconv.Atoi(c); err == nil {
+					config.DSCP = dscp
+				}
+			}
+			if c, b := opts.Get("nocomp"); b {
+				if nocomp, err := strconv.ParseBool(c); err == nil {
+					config.NoComp = nocomp
+				}
+			}
+			if c, b := opts.Get("acknodelay"); b {
+				if acknodelay, err := strconv.ParseBool(c); err == nil {
+					config.AckNodelay = acknodelay
+				}
+			}
+			if c, b := opts.Get("nodelay"); b {
+				if nodelay, err := strconv.Atoi(c); err == nil {
+					config.NoDelay = nodelay
+				}
+			}
+			if c, b := opts.Get("interval"); b {
+				if interval, err := strconv.Atoi(c); err == nil {
+					config.Interval = interval
+				}
+			}
+			if c, b := opts.Get("resend"); b {
+				if resend, err := strconv.Atoi(c); err == nil {
+					config.Resend = resend
+				}
+			}
+			if c, b := opts.Get("nc"); b {
+				if nc, err := strconv.Atoi(c); err == nil {
+					config.NoCongestion = nc
+				}
+			}
+			if c, b := opts.Get("sockbuf"); b {
+				if sockbuf, err := strconv.Atoi(c); err == nil {
+					config.SockBuf = sockbuf
+				}
+			}
+			if c, b := opts.Get("keepalive"); b {
+				if keepalive, err := strconv.Atoi(c); err == nil {
+					config.KeepAlive = keepalive
+				}
+			}
+			if c, b := opts.Get("log"); b {
+				config.Log = c
+			}
+			if c, b := opts.Get("snmplog"); b {
+				config.SnmpLog = c
+			}
+			if c, b := opts.Get("snmpperiod"); b {
+				if snmpperiod, err := strconv.Atoi(c); err == nil {
+					config.SnmpPeriod = snmpperiod
+				}
+			}
+		}
 		// log redirect
 		if config.Log != "" {
 			f, err := os.OpenFile(config.Log, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
